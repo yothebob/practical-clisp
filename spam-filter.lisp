@@ -40,6 +40,27 @@
    (cl-ppcre:all-matches-as-strings "[a-zA-Z]{3,}" text)
    :test #'string=))
 
+
+(defun extract-features (text)
+  (mapcar #'intern-feature (extract-words text)))
+
+;; (extract-features "this is a freekin test")
+
+(defmethod print-object ((object word-feature) stream)
+  (print-unreadable-object (object stream :type t)
+    (with-slots (word ham-count spam-count) object
+      (format stream "~s :hams ~d :spams ~d" word ham-count spam-count))))
+
+
+(defun increment-count (feature type)
+  (ecase ))
+
+(defun train (text type)
+  (dolist (feature (extract-features text))
+    (increment-count feature type))
+  (increment-total-count type))
+
+
 (defun classification (score)
   (cond
     ((<= score *max-ham-score* .4) 'ham)
@@ -47,8 +68,11 @@
     (t 'unsure)))
 
 
+
+
 (defun classify (text)
   (classification (score (extract-features text))))
+
 
 
 
