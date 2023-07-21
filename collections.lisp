@@ -78,3 +78,42 @@ elt can also be used to update a vector index value
 (find 'b #((a 10) (b 20) (a 30) (b 40)) :key #'first :end 1)
 (find 'b #((a 10) (b 20) (a 30) (b 40)) :key #'first :from-end t)
 
+(remove #\a "foobarbaz" :count 1)
+(remove #\a "foobarbaz" :count 1 :from-end t)
+
+(defparameter *v* #((a 10) (b 20) (a 30) (b 40)))
+(defun verbose-first (x) (format t "Looking at ~s~%" x) (first x))
+(count 'a *v* :key #'verbose-first)
+(count 'a *v* :key #'verbose-first :from-end t)
+
+;; | argument  | meaning                                                                                                               | default |
+;; |-----------+-----------------------------------------------------------------------------------------------------------------------+---------|
+;; | :test     | two argument function used to compare item (or value extracted by :key function )                                     | eql     |
+;; | :key      | One argument function to extract key value from acual sequence element. nil means use element as is.                  | nil     |
+;; | :start    | Starting index (inclusive) of subsequence.                                                                            | 0       |
+;; | :end      | Ending index (exclusive) of subsequence. Nil indicated end of sequence                                                | nil     |
+;; | :from-end | if true, the seqauence will be traversed in reverse order from end to start.                                          | nil     |
+;; | :count    | Number indicating ther number of elements to remove or substitute or nil to indicate all (REMOVE and SUBSTITUTE only) | nil     |
+
+
+(count-if #'evenp #(1 2 3 4 5))
+(count-if-not #'evenp #(1 2 3 4 5))
+
+(position-if #'digit-char-p "abcd0001")
+
+(remove-if-not #'(lambda (x) (char= (elt x 1) #\o))
+	       #("foo" "bar" "baz" "foom"))
+
+(concatenate 'vector #(1 2 3) #(4 5 6))
+(concatenate 'list #(1 2 3) #(4 5 6))
+(concatenate 'string "abc" #(#\d #\e #\f))
+
+(sort (vector "foo" "bar" "baz") #'string<)
+
+
+
+
+
+
+
+
