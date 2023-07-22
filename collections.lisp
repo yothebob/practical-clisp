@@ -111,6 +111,89 @@ elt can also be used to update a vector index value
 (sort (vector "foo" "bar" "baz") #'string<)
 
 
+;; stable-sort is garenteed to not sort the argument, just return a sorted copy
+(stable-sort (vector "foo" "bar" "baz") #'string<) 
+
+;; so you need override your variable if you want to sort it. like so
+(setf my-sequence (sort my-sequence #'string<))
+
+;; merge and sort
+(merge 'vector #(1 3 5) #(2 4 6) #'<) 
+(merge 'list #(1 3 5) #(2 4 6) #'<)
+
+;; subseq extracts a subsequence starting at an index and continuing to an end index or the end
+(subseq "foobarbaz" 3)
+(subseq "foobarbaz" 3 6)
+
+(defparameter *x* (copy-seq "foobarbaz"))
+
+(setf (subseq *x* 3 6) "xxx")  ; subsequence and new value are same length
+;; *x* ==> "fooxxxbaz"
+
+(setf (subseq *x* 3 6) "abcd") ; new value too long, extra character ignored.
+;; *x* ==> "fooabcbaz"
+
+(setf (subseq *x* 3 6) "xx")   ; new value too short, only two characters changed
+;; *x* ==> "fooxxcbaz"
+
+(position #\b "foobarbaz")
+(search "bar" "foobarbaz")
+
+(mismatch "foobarbaz" "foom")
+
+(mismatch "foozbar" "bar" :from-end t)
+
+(every #'evenp #(1 2 3 4 5));;    ==> NIL
+(some #'evenp #(1 2 3 4 5));;     ==> T
+(notany #'evenp #(1 2 3 4 5));;   ==> NIL
+(notevery #'evenp #(1 2 3 4 5));; ==> T
+
+;; These calls compare elements of two sequences pairwise:
+
+(every #'> #(1 2 3 4) #(5 4 3 2));;    ==> NIL
+(some #'> #(1 2 3 4) #(5 4 3 2));;     ==> T
+(notany #'> #(1 2 3 4) #(5 4 3 2));;   ==> NIL
+(notevery #'> #(1 2 3 4) #(5 4 3 2));; ==> T
+
+(map 'vector #'* #(1 2 3 4 5) #(10 9 8 7 6)) ;; ==> #(10 18 24 28 30)
+
+;;map-into is like map but puts the result into the passed argument vrs returning a new sequence
+(map-into *x* #'+ a b c)
+
+(reduce #'+ #(1 2 3 4 5 6 7 8 9 10));; ==> 55
+
+;; hash tables
+(defparameter *h* (make-hash-table))
+
+(gethash 'foo *h*);; ==> NIL
+
+(setf (gethash 'foo *h*) 'quux)
+
+(gethash 'foo *h*);; ==> QUUX
+
+
+;; I'll discuss multiple return values in greater detail in Chapter 20, but for now I'll give you a sneak preview of how to use the MULTIPLE-VALUE-BIND macro to take advantage of GETHASH's extra return value. MULTIPLE-VALUE-BIND creates variable bindings like LET does, filling them with the multiple values returned by a form.
+
+;; The following function shows how you might use MULTIPLE-VALUE-BIND; the variables it binds are value and present:
+
+(defun show-value (key hash-table)
+  (multiple-value-bind (value present) (gethash key hash-table)
+    (if present
+      (format nil "Value ~a actually present." value)
+      (format nil "Value ~a because key not found." value))))
+
+(setf (gethash 'bar *h*) nil) ; provide an explicit value of NIL
+
+(show-value 'foo *h*);; ==> "Value QUUX actually present."
+(show-value 'bar *h*);; ==> "Value NIL actually present."
+(show-value 'baz *h*);; ==> "Value NIL because key not found."
+
+;; hash table iteration
+(maphash #'(lambda (k v) (format t "~a => ~a~%" k v)) *h*)
+
+(loop for k being the hash-keys in *h* using (hash-value v)
+  do (format t "~a => ~a~%" k v))
+
 
 
 
