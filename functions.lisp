@@ -1,6 +1,8 @@
+
 (+ 1 2)
-(quote (+ 1 2))
-'(+ 1 2)
+(quote (+ 1 2)) ; these are the same
+'(+ 1 2) ; these are the same
+
 
 (defun test-params (a &optional b c)
   (list a b c))
@@ -8,6 +10,25 @@
 (test-params 1)
 (test-params 1 2 3)
 (test-params 1 4)
+
+(defun test-params-preset (a &optional b (c 10))
+  (list a b c))
+
+(test-params-preset 1)
+(test-params-preset 1 2)
+(test-params-preset 1 2 3)
+
+(defun make-rectangle (width &optional (height width))
+  (list width height))
+
+(make-rectangle 1)
+(make-rectangle 1 5)
+
+(defun test-param-supplied (a b &optional (c 3 c-supplied-p))
+  (list a b c c-supplied-p))
+
+(test-param-supplied 1 2)
+(test-param-supplied 1 2 3)
 
 (defun test-rest (&rest values)
   (list values))
@@ -21,7 +42,7 @@
 
 (test-params 1)
 (test-params 1 :c 3)
-(test-params 1 4)
+(test-params 1 4) ;; will not work, b & c need keys
 
 (defun test-additional-keys (&key (a 0) (b 0 b-supplied-p))
   (list a b b-supplied-p))
@@ -35,6 +56,11 @@
 
 (test-additional-keys-alias :apple 1)
 (test-additional-keys-alias :bravo 1)
+
+(defun test-rest-and-key (&rest rest &key a b c)
+  (list rest a b c))
+
+(test-rest-and-key :a 1)
 
 ;;; mixing different params needs to be in order
 (defun param-them-all (a &optional b &key z)
